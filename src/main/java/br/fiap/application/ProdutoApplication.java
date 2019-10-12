@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.fiap.domain.entity.Produto;
+import br.fiap.domain.entity.ProdutoResponse;
 import br.fiap.domain.service.ProdutoService;
 import br.fiap.infrastructure.ProdutoServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +42,15 @@ public class ProdutoApplication {
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseStatus(code = HttpStatus.OK)
-	public List<Produto> pesquisar(@RequestParam(required = false) String descricao) {
+	public ProdutoResponse pesquisar(@RequestParam(required = false) String descricao) {
 		log.info("Processando a requisição de pesquisa");
 		try {
-			List<Produto> resultado = servico.pesquisar(descricao);
-			return resultado;
+			ProdutoResponse resposta = new ProdutoResponse();
+			
+			List<Produto> produtos = servico.pesquisar(descricao);
+			resposta.setProdutos(produtos);
+			
+			return resposta;
 		} catch (ProdutoServiceException e) {
 			log.error("Error processing search request", e);
 			throw exceptionHandler(e);
